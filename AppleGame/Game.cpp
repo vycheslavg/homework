@@ -1,89 +1,9 @@
 #include "Game.h"
+#include "Leaderboard.h"
 #include <cassert>
 
 namespace ApplesGame
 {
-
-    void GenerateLeaderboard(Game& game)
-    {
-        game.leaderboard.clear();
-
-        std::vector<std::string> names =
-        {
-            "Alice","Bob","Carol","Dave",
-            "Eve","Frank","Grace","Heidi"
-        };
-
-        int numPlayers = 7;
-
-        for (int i = 0; i < numPlayers; ++i)
-        {
-            LeaderboardEntry entry;
-            entry.name = names[i];
-            entry.score = rand() % 150 + 10;
-            game.leaderboard.push_back(entry);
-        }
-    }
-
-    void UpdatePlayerInLeaderboard(Game& game)
-    {
-        bool found = false;
-
-        for (auto& entry : game.leaderboard)
-        {
-            if (entry.name == "Player")
-            {
-                entry.score = game.numEatenApples;
-                found = true;
-                break;
-            }
-        }
-
-        if (!found)
-        {
-            LeaderboardEntry playerEntry;
-            playerEntry.name = "Player";
-            playerEntry.score = game.numEatenApples;
-            game.leaderboard.push_back(playerEntry);
-        }
-    }
-
-    void SortLeaderboard(Game& game)
-    {
-        for (size_t i = 0; i < game.leaderboard.size(); ++i)
-        {
-            for (size_t j = 0; j < game.leaderboard.size() - 1; ++j)
-            {
-                if (game.leaderboard[j].score < game.leaderboard[j + 1].score)
-                {
-                    std::swap(game.leaderboard[j], game.leaderboard[j + 1]);
-                }
-            }
-        }
-    }
-
-    void UpdateLeaderboardText(Game& game)
-    {
-        std::string text = "===== LEADERBOARD =====\n";
-
-        for (size_t i = 0; i < game.leaderboard.size(); ++i)
-        {
-            text += std::to_string(i + 1) + ". ";
-            text += game.leaderboard[i].name;
-
-            int dots = 15 - game.leaderboard[i].name.length();
-            for (int d = 0; d < dots; ++d)
-                text += ".";
-
-            text += " " + std::to_string(game.leaderboard[i].score);
-            text += "\n";
-        }
-
-        text += "======================";
-
-        game.leaderboardText.setString(text);
-    }
-
 
     void StartPlayingState(Game& game)
     {
@@ -144,9 +64,9 @@ namespace ApplesGame
 
         game.gameOverScoreText.setString("Your score: " + std::to_string(game.numEatenApples));
 
-        UpdatePlayerInLeaderboard(game);
-        SortLeaderboard(game);
-        UpdateLeaderboardText(game);
+        UpdatePlayerScore(game.leaderboard, "Player", game.numEatenApples);
+        SortLeaderboard(game.leaderboard);
+        BuildLeaderboardText(game.leaderboard, game.leaderboardText);
     }
 
     void UpdateGameoverState(Game& game, float deltaTime)
@@ -162,7 +82,6 @@ namespace ApplesGame
             StartPlayingState(game);
         }
     }
-
 
     void InitGame(Game& game)
     {
@@ -231,12 +150,13 @@ namespace ApplesGame
         game.gameOverScoreText.setPosition(SCREEN_WIDTH / 2.f - 100.f,
             SCREEN_HEIGHT / 2.f - 20.f);
 
-        GenerateLeaderboard(game);
+        GenerateLeaderboard(game.leaderboard);
 
         game.leaderboardText.setFont(game.font);
         game.leaderboardText.setCharacterSize(20);
         game.leaderboardText.setFillColor(sf::Color::White);
-        game.leaderboardText.setPosition(SCREEN_WIDTH / 2.f - 200.f,
+        game.leaderboardText.setPosition(
+            SCREEN_WIDTH / 2.f - 200.f,
             SCREEN_HEIGHT / 2.f + 30.f);
 
         StartPlayingState(game);
