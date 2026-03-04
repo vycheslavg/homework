@@ -7,14 +7,17 @@
 #include "Apple.h"
 #include "Rock.h"
 
+#include <vector>
+#include <string>
+
 namespace ApplesGame
 {
     enum class Modes : uint8_t
     {
         None = 0,
-        Mods_1 = 1 << 0,  
-        Mods_2 = 1 << 1,  
-        Mods_3 = 1 << 2   
+        Mods_1 = 1 << 0,
+        Mods_2 = 1 << 1,
+        Mods_3 = 1 << 2
     };
 
     inline Modes operator|(Modes a, Modes b)
@@ -41,11 +44,16 @@ namespace ApplesGame
     {
         return (value & flag) == flag;
     }
-   
+
+    struct LeaderboardEntry
+    {
+        std::string name;
+        int score;
+    };
 
     struct Game
     {
-        Modes mod = Modes::None;   
+        Modes mod = Modes::None;
 
         Rectangle screenRect;
 
@@ -74,6 +82,9 @@ namespace ApplesGame
         sf::Text controlsHintText;
         sf::Text gameOverText;
         sf::Text gameOverScoreText;
+
+        std::vector<LeaderboardEntry> leaderboard;
+        sf::Text leaderboardText;
     };
 
     void InitGame(Game& game);
@@ -86,4 +97,9 @@ namespace ApplesGame
 
     void StartGameoverState(Game& game);
     void UpdateGameoverState(Game& game, float deltaTime);
+
+    void GenerateLeaderboard(Game& game);
+    void UpdatePlayerInLeaderboard(Game& game);
+    void SortLeaderboard(Game& game);
+    void UpdateLeaderboardText(Game& game);
 }
