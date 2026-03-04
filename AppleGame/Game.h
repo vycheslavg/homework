@@ -6,9 +6,9 @@
 #include "Player.h"
 #include "Apple.h"
 #include "Rock.h"
+#include "Leaderboard.h"
 
 #include <vector>
-#include <string>
 
 namespace ApplesGame
 {
@@ -44,12 +44,6 @@ namespace ApplesGame
     {
         return (value & flag) == flag;
     }
-
-    struct LeaderboardEntry
-    {
-        std::string name;
-        int score;
-    };
 
     struct Game
     {
@@ -97,9 +91,4 @@ namespace ApplesGame
 
     void StartGameoverState(Game& game);
     void UpdateGameoverState(Game& game, float deltaTime);
-
-    void GenerateLeaderboard(Game& game);
-    void UpdatePlayerInLeaderboard(Game& game);
-    void SortLeaderboard(Game& game);
-    void UpdateLeaderboardText(Game& game);
 }
